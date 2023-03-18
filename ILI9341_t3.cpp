@@ -108,7 +108,7 @@ void ILI9341_t3::writeFullFbToScreen() {
       screenBuffer[index] = frameBuffer[index];
     }
   }
-  writeRect(0, 0, _width, _height, screenBuffer);
+  writeRectToScreen(0, 0, _width, _height, screenBuffer);
 }
 
 void ILI9341_t3::setFbPixel(int x, int y, uint16_t colour)
@@ -687,8 +687,8 @@ void ILI9341_t3::readRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *
 }
 
 #endif
-// Now lets see if we can writemultiple pixels
-void ILI9341_t3::writeRect(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors)
+// Now lets see if we can write multiple pixels
+void ILI9341_t3::writeRectToScreen(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors)
 {
    	beginSPITransaction(_clock);
 	setAddr(x, y, x+w-1, y+h-1);
@@ -700,6 +700,20 @@ void ILI9341_t3::writeRect(int16_t x, int16_t y, int16_t w, int16_t h, const uin
 		writedata16_last(*pcolors++);
 	}
 	endSPITransaction();
+}
+
+void ILI9341_t3::writeRect(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors)
+{
+	// x is offset
+	// y is offset
+	// w is image/rect width
+	// y is image/rect height
+	for (int targetY=y; targetY<y+h; targetY++) {
+		for (int targetX=x; targetX<x+w; targetX++) {
+			frameBuffer[(targetY*_width)+targetX] = *pcolors++;
+		}
+	}
+
 }
 
 // writeRect8BPP - 	write 8 bit per pixel paletted bitmap

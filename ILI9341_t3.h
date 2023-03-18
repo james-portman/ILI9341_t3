@@ -241,6 +241,7 @@ class ILI9341_t3 : public Print
 	// Added functions to read pixel data...
 	uint16_t readPixel(int16_t x, int16_t y);
 	void readRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t *pcolors);
+	void writeRectToScreen(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors);
 	void writeRect(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t *pcolors);
 
 	// writeRect8BPP - 	write 8 bit per pixel paletted bitmap
