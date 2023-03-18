@@ -111,11 +111,6 @@ void ILI9341_t3::writeFullFbToScreen() {
   writeRectToScreen(0, 0, _width, _height, screenBuffer);
 }
 
-void ILI9341_t3::setFbPixel(int x, int y, uint16_t colour)
-{
-	frameBuffer[(y*_width)+x] = colour;
-}
-
 void ILI9341_t3::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
 	beginSPITransaction(_clock);

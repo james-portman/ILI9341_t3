@@ -182,7 +182,6 @@ class ILI9341_t3 : public Print
 	ILI9341_t3(uint16_t * pFrameBuffer, uint16_t *pScreenBuffer, uint8_t _CS, uint8_t _DC, uint8_t _RST = 255, uint8_t _MOSI=11, uint8_t _SCLK=13, uint8_t _MISO=12);
 	uint16_t * frameBuffer;
 	uint16_t * screenBuffer;
-	void setFbPixel(int x, int y, uint16_t colour);
 	void writeFullFbToScreen();
 	void fillBuffer(uint16_t colour);
 	void printFbDiffToScreen();
