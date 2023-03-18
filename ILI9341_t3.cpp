@@ -63,7 +63,7 @@
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
-ILI9341_t3::ILI9341_t3(uint8_t cs, uint8_t dc, uint8_t rst, uint8_t mosi, uint8_t sclk, uint8_t miso)
+ILI9341_t3::ILI9341_t3(uint16_t * pFrameBuffer, uint16_t * pScreenBuffer, uint8_t cs, uint8_t dc, uint8_t rst, uint8_t mosi, uint8_t sclk, uint8_t miso)
 {
 	_cs   = cs;
 	_dc   = dc;
@@ -82,6 +82,38 @@ ILI9341_t3::ILI9341_t3(uint8_t cs, uint8_t dc, uint8_t rst, uint8_t mosi, uint8_
 	// Added to see how much impact actually using non hardware CS pin might be
     _cspinmask = 0;
     _csport = NULL;
+    frameBuffer = pFrameBuffer;
+    screenBuffer = pScreenBuffer;
+}
+
+void ILI9341_t3::printFbDiffToScreen() {
+  // TODO: could speed this up by printing in chunks
+  // might get messy but if multiple pixels in a row or rectangle change then send them all in one go?
+  for (int y=0; y<_height; y++) {
+    for (int x=0; x<_width; x++) {
+      int index = (y*_width)+x;
+      if (frameBuffer[index] != screenBuffer[index]) {
+        screenBuffer[index] = frameBuffer[index];
+        drawPixelToScreen(x, y, screenBuffer[index]);
+      }
+    }
+  }
+}
+
+void ILI9341_t3::writeFullFbToScreen() {
+  // approx 24 fps with no other code running
+  for (int y=0; y<_height; y++) {
+    for (int x=0; x<_width; x++) {
+      int index = (y*_width)+x;
+      screenBuffer[index] = frameBuffer[index];
+    }
+  }
+  writeRect(0, 0, _width, _height, screenBuffer);
+}
+
+void ILI9341_t3::setFbPixel(int x, int y, uint16_t colour)
+{
+	frameBuffer[(y*_width)+x] = colour;
 }
 
 void ILI9341_t3::setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
@@ -100,15 +132,19 @@ void ILI9341_t3::pushColor(uint16_t color)
 }
 
 void ILI9341_t3::drawPixel(int16_t x, int16_t y, uint16_t color) {
-
 	if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
+	frameBuffer[(y*_width)+x] = color;
+}
 
+void ILI9341_t3::drawPixelToScreen(int16_t x, int16_t y, uint16_t color) {
+	if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
 	beginSPITransaction(_clock);
 	setAddr(x, y, x, y);
 	writecommand_cont(ILI9341_RAMWR);
 	writedata16_last(color);
 	endSPITransaction();
 }
+
 
 void ILI9341_t3::drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color)
 {
@@ -142,9 +178,17 @@ void ILI9341_t3::drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color)
 	endSPITransaction();
 }
 
+void ILI9341_t3::fillBuffer(uint16_t colour) {
+  for (int i=0; i<_width * _height; i++) {
+    frameBuffer[i] = colour;
+  }
+}
+
 void ILI9341_t3::fillScreen(uint16_t color)
 {
-	fillRect(0, 0, _width, _height, color);
+	fillBuffer(color);
+	writeFullFbToScreen();
+	// fillRect(0, 0, _width, _height, color);
 }
 
 // fill a rectangle

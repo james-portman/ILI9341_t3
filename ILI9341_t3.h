@@ -179,13 +179,21 @@ typedef struct {
 class ILI9341_t3 : public Print
 {
   public:
-	ILI9341_t3(uint8_t _CS, uint8_t _DC, uint8_t _RST = 255, uint8_t _MOSI=11, uint8_t _SCLK=13, uint8_t _MISO=12);
+	ILI9341_t3(uint16_t * pFrameBuffer, uint16_t *pScreenBuffer, uint8_t _CS, uint8_t _DC, uint8_t _RST = 255, uint8_t _MOSI=11, uint8_t _SCLK=13, uint8_t _MISO=12);
+	uint16_t * frameBuffer;
+	uint16_t * screenBuffer;
+	void setFbPixel(int x, int y, uint16_t colour);
+	void writeFullFbToScreen();
+	void fillBuffer(uint16_t colour);
+	void printFbDiffToScreen();
+
 	void begin(void);
   	void sleep(bool enable);		
         void setClock(unsigned long clk) { _clock = clk;}
 	void pushColor(uint16_t color);
 	void fillScreen(uint16_t color);
 	void drawPixel(int16_t x, int16_t y, uint16_t color);
+	void drawPixelToScreen(int16_t x, int16_t y, uint16_t color);
 	void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
 	void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
 	void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
@@ -297,7 +305,7 @@ class ILI9341_t3 : public Print
 	int16_t strPixelLen(char * str);
 
  protected:
-        unsigned long _clock = ILI9341_SPICLOCK;
+    unsigned long _clock = ILI9341_SPICLOCK;
 	int16_t _width, _height; // Display w/h as modified by current rotation
 	int16_t  cursor_x, cursor_y;
 	uint16_t textcolor, textbgcolor;
