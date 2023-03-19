@@ -559,6 +559,7 @@ class ILI9341_t3 : public Print
 		writedata16_cont(color);
 	}
 	void drawFontBits(uint32_t bits, uint32_t numbits, uint32_t x, uint32_t y, uint32_t repeat);
+	void drawFontBitsToScreen(uint32_t bits, uint32_t numbits, uint32_t x, uint32_t y, uint32_t repeat);
 };
 
 // To avoid conflict when also using Adafruit_GFX or any Adafruit library

@@ -1707,7 +1707,18 @@ int16_t ILI9341_t3::strPixelLen(char * str)
 	return( maxlen );
 }
 
-void ILI9341_t3::drawFontBits(uint32_t bits, uint32_t numbits, uint32_t x, uint32_t y, uint32_t repeat)
+void ILI9341_t3::drawFontBits(uint32_t bits, uint32_t numbits, uint32_t x, uint32_t y, uint32_t repeat) // drawFontBits(bits, xsize, origin_x + x, y, 1);
+{
+	for (int row=0; row<repeat; row++) {
+		for (int i=0; i<numbits; i++) {
+			if (((bits >> (numbits-1-i)) & 1) > 0) {
+				drawPixel(x+i, y+row, textcolor);
+			}
+		}
+	}
+}
+
+void ILI9341_t3::drawFontBitsToScreen(uint32_t bits, uint32_t numbits, uint32_t x, uint32_t y, uint32_t repeat)
 {
 	if (bits == 0) return;
 	beginSPITransaction(_clock);
