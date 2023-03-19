@@ -1,3 +1,7 @@
+This is modified on top of Paul's version to use a frame buffer rather than printing directly to the screen
+
+------------------------------------------
+
 Discussion regarding this optimized version:
 
 http://forum.pjrc.com/threads/26305-Highly-optimized-ILI9341-%28320x240-TFT-color-display%29-library
